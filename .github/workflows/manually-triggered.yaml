@@ -1,9 +1,31 @@
 name: Manually Triggered
 on:
   workflow_dispatch:
+    inputs:
+      string:
+        description: A string input
+        type: string
+        required: true
+        default: 'Hello, World!'
+      option:
+        description: An option input
+        type: choice
+        required: true
+        options:
+          - 'option1'
+          - 'option2'
+          - 'option3'
+      environment:
+        description: An environment input
+        type: environment
+        required: true
 
 jobs:
   log-info:
     runs-on: ubuntu-latest
     steps:
       - run: echo $GITHUB_REF
+      - run: | 
+          echo "String: ${{inputs.string}}"
+          echo "Option: ${{inputs.option}}"
+          echo "Environment: ${{inputs.environment}}"
