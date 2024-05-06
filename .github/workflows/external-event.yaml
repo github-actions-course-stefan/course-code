@@ -6,4 +6,6 @@ jobs:
   echo-a-string:
     runs-on: ubuntu-latest
     steps:
-       - run: echo "Repository dispatch event triggered!"
+       - run: | 
+          echo "Repository dispatch event triggered!"
+          echo ${{ github.event.client_payload.message }} #Lo que se envía en el payload via REST API
