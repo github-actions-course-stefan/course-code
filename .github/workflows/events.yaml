@@ -1,8 +1,27 @@
 name: Repository Events
 on:
   push:
+    branches:
+      - main
+      - "feature/*" # Matches any branch with a name that starts with "feature/"
+      - "feature/**" # Matches any branch with a name that starts with "feature/other/"
+      - "!develop" # Para el exclude tiene que estar al final de la lista
+#    branches-ignore:
+#      - develop
+    tags:
+      - v1.*
+      - "!v1.1.1"
+    paths:
+      - "**.js"
+      - "!app.js"
+
   pull_request:
     types: [opened, synchronize, reopened, assigned]
+    branches:
+      - master
+    paths:
+      - "**.js"
+
   issues:
     types: [opened]
 
