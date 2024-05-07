@@ -1,0 +1,26 @@
+name: Notify created PR
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify-created-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create message
+        id: create-message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { number, html_url } = context.payload.pull_request;
+            const { login } = context.payload.pull_request.user;
+            return `PR #${number} created by @${login} - ${html_url}`;
+
+      - name: Notify in Slack
+        run: |
+          curl --location 'https://slack.com/api/chat.postMessage' \
+          --header 'Authorization: Bearer <Poner el token>' \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --data-urlencode 'text=${{ steps.create-message.outputs.result }}' \
+          --data-urlencode 'channel=<Poner el id del canal>'
