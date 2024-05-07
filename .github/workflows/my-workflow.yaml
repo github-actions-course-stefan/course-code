@@ -1,0 +1,49 @@
+name: Notify created/upgraded PRs
+on: [pull_request]
+
+jobs:
+  notify-created-pr:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_CHANNEL: C072N75P20H
+    steps:
+      - name: Create message
+        if: github.event.action == 'opened'
+        id: create-message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { number, html_url } = context.payload.pull_request;
+            const { login } = context.payload.pull_request.user;
+            return `PR #${number} created by @${login} - ${html_url}`;
+
+      - name: Notify in Slack
+        run: |
+          curl --location 'https://slack.com/api/chat.postMessage' \
+          --header 'Authorization: Bearer ${{ secrets.SLACK_TOKEN }}' \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --data-urlencode 'text=${{ steps.create-message.outputs.result }}' \
+          --data-urlencode 'channel=C072N75P20H'
+
+  notify-upgraded-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create message
+        if: github.event.action == 'synchronize'
+        id: create-message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { number, html_url } = context.payload.pull_request;
+            const { login } = context.payload.pull_request.user;
+            return `PR #${number} upgraded by @${login} - ${html_url}`;
+
+      - name: Notify in Slack
+        run: |
+          curl --location 'https://slack.com/api/chat.postMessage' \
+          --header 'Authorization: Bearer ${{ secrets.SLACK_TOKEN }}' \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --data-urlencode 'text=${{ steps.create-message.outputs.result }}' \
+          --data-urlencode 'channel=C072N75P20H'
